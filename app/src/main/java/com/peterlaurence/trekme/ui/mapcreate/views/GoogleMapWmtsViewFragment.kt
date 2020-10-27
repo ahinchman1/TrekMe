@@ -107,7 +107,14 @@ class GoogleMapWmtsViewFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        mapView?.destroy()
+        /* Commenting-out MapView destruction.
+         * MapView has internal threading and uses a TileProvider to fetch tiles.
+         * When we rotate the device, onDestroyView is invoked. However, we intentionnally commented-out
+         * mapView?.destroy(), which would cause background threads to stop. So background thread are still running.
+         * Unfortunately, those threads have un implicit reference on the MapView itself. So MapView leaks.
+         * MapView, as any other View, has an implicit reference to the parent Context. That's why leakcanary detects a
+         * memory leak. */
+//        mapView?.destroy()
         mapView = null
         areaLayer = null
         positionMarker = null
